@@ -1,4 +1,6 @@
 'use client'
+import { createAccount, getLoggedInUserData, login } from "@/utils/DataServices";
+import { IToken } from "@/utils/Interfaces";
 import { Button, Checkbox, Label, TextInput } from "flowbite-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,16 +23,29 @@ export default function Home() {
       username: username,
       password: password
     }
-    console.log(userData);
 
     if(switchBool){
       //create account logic
-      console.log("Account Created");
+      let result = await createAccount(userData);
+
+      result ? alert("Account Created!") : alert("Username Already Exsists");
     }else{
       //login logic
-      console.log("Login Successful");
+      let token: IToken = await login(userData);
 
-      router.push('/Dashboard')
+      if(token != null){
+        if(typeof window != null){
+          localStorage.setItem("Token", token.token);
+          console.log(token.token);
+          
+          await getLoggedInUserData(username);
+
+          router.push('/Dashboard');
+        }
+      }else{
+        alert("Login was no good wrong password or somthing")
+      }
+
     }
   }
 
@@ -53,9 +68,9 @@ export default function Home() {
             <TextInput id="password1" type="password" required onChange={(e) => setPassword(e.target.value)} />
           </div>
           <div className="flex items-center gap-2">
-            <Button color={"light"} onClick={handleSwitch}>{switchBool? "Already have an Account?": "Click to create Account"}</Button>
+            <Button className="cursor-pointer" color={"light"} onClick={handleSwitch}>{switchBool? "Already have an Account?": "Click to create Account"}</Button>
           </div>
-          <Button onClick={handleSubmit} >Submit</Button>
+          <Button className="cursor-pointer" onClick={handleSubmit} >Submit</Button>
         </form>
       </div>
 
