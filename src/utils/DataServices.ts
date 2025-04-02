@@ -1,4 +1,4 @@
-import { IUserData, IUserInfo } from "./Interfaces"
+import { IBlogsItems, IUserData, IUserInfo } from "./Interfaces"
 
 
 const url = "https://spacekkblog-g8fzhrd2ecc2fnf2.westus-01.azurewebsites.net/"
@@ -83,4 +83,104 @@ export const checkToken = () => {
     }
     return result;
     
+}
+
+// BLOG ENDPOINTS
+
+export const getAllBlogs = async (token:string) => {
+    const res = await fetch(url + 'Blog/GetAllBlogs', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer " + token
+        }
+    });
+    if(!res.ok){
+        const errorData = await res.json();
+        const message = errorData.message;
+        console.log(message);
+        return [];
+    }
+    const data = await res.json();
+    return data;
+}
+
+export const getBlogsByUserId = async (userId:number, token:string) => {
+    const res = await fetch(url + 'Blog/GetBlogsByUserId/' + userId, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer " + token
+        }
+    });
+    if(!res.ok){
+        const errorData = await res.json();
+        const message = errorData.message;
+        console.log(message);
+        return [];
+    }
+    const data = await res.json();
+    return data;
+}
+
+export const addBlogItem = async (blog: IBlogsItems, token:string) => {
+    const res = await fetch(url + 'Blog/AddBlog', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(blog)
+    });
+    if(!res.ok){
+        const errorData = await res.json();
+        const message = errorData.message;
+        console.log(message);
+        return false;
+    }
+    const data = await res.json();
+    //return true we have successfully added our blog to our backend db
+    return data.success;
+}
+
+export const updateBlogItem = async (blog:IBlogsItems, token:string) => {
+    const res = await fetch(url + 'Blog/EditBlog', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(blog)
+    });
+    if(!res.ok){
+        const errorData = await res.json();
+        const message = errorData.message;
+        console.log(message);
+        return false;
+    }
+    const data = await res.json();
+    return data.success;
+}
+
+export const deleteBlogItem = async (blog:IBlogsItems, token:string) => {
+    const res = await fetch(url + 'Blog/DeleteBlog', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(blog)
+    });
+    if(!res.ok){
+        const errorData = await res.json();
+        const message = errorData.message;
+        console.log(message);
+        return false;
+    }
+    const data = await res.json();
+    return data.success;
+}
+
+const GetToken = () => {
+    return localStorage.getItem('Token') ?? '';
 }

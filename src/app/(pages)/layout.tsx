@@ -1,9 +1,10 @@
+import { NavbarComponent } from '@/components/NavbarComponent';
 import React from 'react'
 
 const layout = ({children,}: Readonly<{children: React.ReactNode;}>) => {
   return (
     <div>
-      <h1>nav</h1>
+      <NavbarComponent />
       {/* the pages are the children within our layout */}
       {children}
     </div>
