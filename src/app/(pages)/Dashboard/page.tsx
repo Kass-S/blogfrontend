@@ -1,10 +1,11 @@
 'use client'
 
-import { checkToken, loggedInData } from '@/utils/DataServices'
+import { checkToken, getBlogsByUserId, GetToken, loggedInData } from '@/utils/DataServices'
 import React, { useEffect, useState } from 'react'
 import { Button, Dropdown, DropdownItem, FileInput, Label, Modal, ModalBody, ModalFooter, ModalHeader, TextInput, Accordion, AccordionContent, AccordionPanel, AccordionTitle, ListGroup } from 'flowbite-react'
 import { IBlogsItems } from '@/utils/Interfaces'
 import BlogEntries from '@/utils/BlogEntries.json'
+import { useRouter } from 'next/navigation'
 
 const page = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -22,12 +23,33 @@ const page = () => {
 
   const [blogItems, setBlogItems] = useState<IBlogsItems[]>(BlogEntries);
 
+  const router = useRouter();
+
+
   useEffect(() => {
+
+    const getLoggedInData = async () => {
+      //get the user's information
+      const loggedIn = loggedInData();
+      setBlogUserId(loggedIn.id);
+      setBlogPublisherName(loggedIn.username);
+
+      //get the user's blog items
+      const userblogItems = await getBlogsByUserId(loggedIn.id, GetToken());
+      console.log(userblogItems);
+      
+      //set the user's blog items inside the useState
+      
+      setBlogItems(userblogItems);
+    }
+
 
     if(!checkToken()){
       //push to login page
+      router.push('/')
     }else{
       //get user data / logic login funtion
+      getLoggedInData();
     }
 
   },[]);
